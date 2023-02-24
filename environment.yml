@@ -1,4 +1,4 @@
 channels:
-     - conda-forge
+     - conda
  dependencies:
-     - whisper
+     - whisper=1.10.1
