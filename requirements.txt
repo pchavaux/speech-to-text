@@ -12,4 +12,4 @@ tokenizers==0.12.1
 pyannote.audio==2.1.1
 pyannote.core==4.4
 pydub==0.25.1
-whisper==1.1.10
+
