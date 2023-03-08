@@ -1,17 +1,19 @@
 # import dependencies
-
+import torch
+import torch.optim as optim
 # Audio Manipulation
 import audioread
 import librosa
 from pydub import AudioSegment, silence
 import youtube_dl
 from youtube_dl import DownloadError
-
 # Models
-import torch
+import nltk
+from torch import nn
 from transformers import pipeline, HubertForCTC, T5Tokenizer, T5ForConditionalGeneration, Wav2Vec2ForCTC, Wav2Vec2Processor, Wav2Vec2Tokenizer
 from pyannote.audio import Pipeline
-
+from highlight_text import HighlightText
+#from highlight_text import text_highlighter
 # Others
 from datetime import timedelta
 import os
@@ -25,10 +27,11 @@ from whisper import load_model
 import whisperx
 import os
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] ="128mb"
-
+from annotated_text import annotated_text
 import gc
 torch.cuda.empty_cache()
 gc.collect()
+
 
 
 def config():
@@ -59,7 +62,7 @@ def config():
         st.session_state["number_of_speakers"] = 0  # Save the number of speakers detected in the conversation (diarization)
         st.session_state["chosen_mode"] = 0  # Save the mode chosen by the user (Diarization or not, timestamps or not)
         st.session_state["btn_token_list"] = []  # List of tokens that indicates what options are activated to adapt the display on results page
-        st.session_state["my_HF_token"] = "ACCESS_TOKEN_GOES_HERE"  # User's Token that allows the use of the diarization model
+        st.session_state["my_HF_token"] = "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"  # User's Token that allows the use of the diarization model
         st.session_state["disable"] = True  # Default appearance of the button to change your token
 
     # Display Text and CSS
@@ -124,17 +127,17 @@ def load_options(audio_length, dia_pipeline):
 
         with col2:
             # Summarize the transcript
-            summarize_token = st.checkbox("Generate a summary", value=False)
+            summarize_token = st.checkbox("Sentiment Analysis", value=False)
 
             # Generate a SRT file instead of a TXT file (shorter timestamps)
-            srt_token = st.checkbox("Generate subtitles file", value=False)
+            srt_token = st.checkbox("Entity Detection", value=False)
 
         with col3:
             # Display the timestamp of each transcribed part
             timestamps_token = st.checkbox("Show timestamps", value=True)
 
             # Improve transcript with an other model (better transcript but longer to obtain)
-            choose_better_model = st.checkbox("Change STT Model")
+            choose_better_model = st.checkbox("Topics")
 
         # Srt option requires timestamps so it can matches text with time => Need to correct the following case
         if not timestamps_token and srt_token:
@@ -395,17 +398,23 @@ def transcription(stt_tokenizer, stt_model, t5_tokenizer, t5_model, summarizer, 
                             # punctuate each text block
                             for my_split_text in my_split_text_list:
                                 txt_text += add_punctuation(t5_model, t5_tokenizer, my_split_text)
-
+                                
                 # Clean folder's files
                 clean_directory("../data")
 
                 # Display the final transcript
                 if txt_text != "":
                     st.subheader("Final text is")
-
+                    txt_end = len(txt_text)
                     # Save txt_text and display it
+                    #annotated_text (txt_text,"","#faa")
                     update_session_state("txt_transcript", txt_text)
-                    st.markdown(txt_text, unsafe_allow_html=True)
+                    #update_session_state("txt_transcript",annotated_text ("",txt_text,"#faa"))
+                    st.markdown(text_highlighter(
+    text=txt_text+str(x),
+    labels=[("PERSON", "red"), ("ORG", "#0000FF")],annotations=[
+        {"start": 0, "end": txt_end, "tag": "PERSON"},
+        {"start": 0, "end": txt_end, "tag": "ORG"}]))
 
                     # Summarize the transcript
                     if summarize_token:
