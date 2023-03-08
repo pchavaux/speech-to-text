@@ -1,3 +1,4 @@
+transformers>=4.19.0
 librosa==0.9.1
 youtube_dl==2021.12.17
 numba==0.56.4
