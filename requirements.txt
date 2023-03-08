@@ -1,4 +1,4 @@
-transformers>=4.19.0
+transformers==4.19.0
 ffmpeg-python
 librosa==0.9.1
 youtube_dl==2021.12.17
