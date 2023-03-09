@@ -24,7 +24,7 @@ import streamlit as st
 import time
 import whisper
 from whisper import load_model
-import whisperx
+
 import os
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] ="128mb"
 from annotated_text import annotated_text
