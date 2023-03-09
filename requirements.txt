@@ -1,3 +1,4 @@
+highlight_text
 nltk
 transformers==4.19.0
 ffmpeg-python
