@@ -1,3 +1,4 @@
+nltk
 transformers==4.19.0
 ffmpeg-python
 librosa==0.9.1
