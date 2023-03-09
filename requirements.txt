@@ -1,3 +1,4 @@
+st-annotated-text
 highlight_text==0.2
 nltk
 transformers==4.19.0
